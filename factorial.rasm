@@ -1,0 +1,23 @@
+push 1
+push 7
+
+loop:
+    dup 0
+    push 1
+    eq
+    jif end
+
+    dup 1
+    dup 1
+    mul
+
+    swap
+
+    push 1
+    sub
+
+    jmp loop
+
+end:
+    pop
+    halt
