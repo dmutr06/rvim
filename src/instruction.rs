@@ -13,6 +13,8 @@ pub enum Instruction {
     Jmp(usize),
     Eq,
     Jif(usize),
+    Jifz(usize),
     Dup(usize),
     Swap,
+    Rot,
 }

@@ -78,6 +78,11 @@ pub fn compile(src: &mut File, out: &mut File) -> Result<(), CompileError> {
                 require_no_more_ops(words, idx + 1)?;
                 program.push(Jif(addr));
             },
+            "jifz" => {
+                let addr = parse_addr_or_label(words.next(), &labels, idx + 1)?;
+                require_no_more_ops(words, idx + 1)?;
+                program.push(Jifz(addr));
+            },
             "eq" => {
                 require_no_more_ops(words, idx + 1)?;
                 program.push(Eq);
@@ -94,6 +99,10 @@ pub fn compile(src: &mut File, out: &mut File) -> Result<(), CompileError> {
             "swap" => {
                 require_no_more_ops(words, idx + 1)?;
                 program.push(Swap);
+            },
+            "rot" => {
+                require_no_more_ops(words, idx + 1)?;
+                program.push(Rot);
             }
             label if label.ends_with(":") =>  {
                 continue;

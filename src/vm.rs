@@ -43,9 +43,11 @@ impl Rvim {
             Jmp(ip) => self.inst_jmp(ip),
             Eq => self.inst_eq(),
             Jif(ip) => self.inst_jif(ip),
+            Jifz(ip) => self.inst_jifz(ip),
             Dup(idx) => self.inst_dup(idx),
             Pop => self.inst_pop(),
             Swap => self.inst_swap(),
+            Rot => self.inst_rot(),
         }?;
 
         if move_ip {
@@ -147,6 +149,23 @@ impl Rvim {
         }
     }
 
+    fn inst_jifz(&mut self, ip: usize) -> Result<bool, RvimError> {
+        self.require_stack_len(1)?;
+
+        if ip >= self.program.len() {
+            return Err(RvimError::InvalidOperand);
+        }
+
+        self.stack_len -= 1;
+
+        if self.stack[self.stack_len] == 0 {
+            self.ip = ip;
+            Ok(false)
+        } else {
+            Ok(true)
+        }
+    }
+
     fn inst_dup(&mut self, idx: usize) -> Result<bool, RvimError> {
         self.require_stack_len(idx)?;
         self.check_for_stack_overflow()?;
@@ -172,6 +191,19 @@ impl Rvim {
         let temp = self.stack[self.stack_len - 1];
         self.stack[self.stack_len - 1] = self.stack[self.stack_len - 2];
         self.stack[self.stack_len - 2] = temp;
+        Ok(true)
+    }
+
+    fn inst_rot(&mut self) -> Result<bool, RvimError> {
+        self.require_stack_len(3)?;
+        let a = self.stack[self.stack_len - 3];
+        let b = self.stack[self.stack_len - 2];
+        let c = self.stack[self.stack_len - 1];
+
+        self.stack[self.stack_len - 1] = b;
+        self.stack[self.stack_len - 2] = c;
+        self.stack[self.stack_len - 3] = a;
+
         Ok(true)
     }
     
